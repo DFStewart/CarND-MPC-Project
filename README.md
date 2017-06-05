@@ -27,16 +27,42 @@ The update equations are shown below in Figure 3. These equations tell us how th
 ![alt text][image3]
 
 ## Setting MPC Timestep Length (N) and Elapsed Duration (dt)
+As stated in Lesson 19 the prediction horizon, T is the duration over which future predictions are made. T is the product of N and dt. T = N * dt. N is the number of timesteps in the horizon. dt is the timestep between actuations.
 
+N, dt and T are hyperparameters we must determine. From the Lesson 19 we recall some guidelines:
+* T should be as large as possible, implying we should try to predict as far into the future as possible.
+* dt should be as small as possible to make actuations as smooth as possible
+* T should at most be a few seconds for a car, the environment doesnt change much beyond this
+* N determines the number of variables optimized by MPC. Larger N imcreases computational load.
+
+The approach I took was similar to what was suggested in Lesson 19:
+Set N,dt and T to find a reasonable range for T and then tune dt and N. I observed the following in this process:
+* dt < 0.05 made the steering much smoother. 
+* Larger N > 20 seemed to be too large. The car seemed like it was trying to steer too slowly. It would often oscillate uncontrollably if N was too high.
+
+After some trial and error I settled on N = 17, dt=0.023s and T = 0.391s. This in concert with the gains applied to the costs seemed to work best.
 
 ## Polynomial Fitting and MPC Preprocessing
 The simulator returns x and y global position coordinates of the car. We need to translate these into the vehicle body coordinate system first before sending to the MPC solver.
 
-Once the coordinates of the car are in the vehicle body frame we apply the polyfit function with 3rd order. The polyfit function will fit a polynomial of 3rd order. 3rd order was selected because of the suggestion in Lecture 18 that they work best at fitting most roads.
+Once the coordinates of the car are in the vehicle body frame we apply the polyfit function with 3rd order. The polyfit function will fit a polynomial of 3rd order. 3rd order was selected because of the suggestion in Lesson 18 that they work best at fitting most roads.
+
+## MPC
+For the actual MPC itself, I started with the mpc_to_line example from Lesson 19. I started by adjusting N, dt and T. This did not seem to be enough to get the car driving smoothly. To improve this I used the suggestion in Lecture 19 to apply gains/cost modifiers for each variable we are attempting to minimize the cost. These "lambda" variables are hand tuned to the performance of the MPC. For example if I want the car to prioritize minimizing CTE, I increase the gain on CTE. These parameters were primarily hand tuned. The best gains I could find are shown below:
+const double lambda_cte    	 = 10.0; 
+const double lambda_epsi  	 = 50.0; 
+const double lambda_v  		 = 1.0;  
+const double lambda_thr      = 20.0; 
+const double lambda_str      = 20.0; 
+const double lambda_dif_thr  = 30.0;  
+const double lambda_dif_str  = 1000.0;
 
 ## MPC With Latency
 
+The simulator artifically adds 100 ms of latency between command and actuator response in order to mimic real life actuator delay. To deal with the latency I used the suggestion in Lesson 19 to create a simple dynamic model of the system and propogated the state from the simulator for the duration of the latency. This new state could then be used by the MPC solver as its new initial state.
+
 ## Results
+Final results are shown in the video below.
 
 ## Further Work
 Further tuning could be done to improve performance. Only one speed was tested, other speeds should be tested to verify robustness of the controller. 
