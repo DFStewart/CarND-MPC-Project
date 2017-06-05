@@ -50,17 +50,20 @@ Once the coordinates of the car are in the vehicle body frame we apply the polyf
 
 ## MPC
 For the actual MPC itself, I started with the mpc_to_line example from Lesson 19. I started by adjusting N, dt and T. This did not seem to be enough to get the car driving smoothly. To improve this I used the suggestion in Lecture 19 to apply gains/cost modifiers for each variable we are attempting to minimize the cost. These "lambda" variables are hand tuned to the performance of the MPC. For example if I want the car to prioritize minimizing CTE, I increase the gain on CTE. These parameters were primarily hand tuned. The best gains I could find are shown below:
-const double lambda_cte    	 = 10.0; 
-const double lambda_epsi  	 = 50.0; 
-const double lambda_v  		 = 1.0;  
-const double lambda_thr      = 20.0; 
-const double lambda_str      = 20.0; 
-const double lambda_dif_thr  = 30.0;  
-const double lambda_dif_str  = 1000.0;
+
+- lambda_cte    	 = 10.0; 
+- lambda_epsi  	  = 50.0; 
+- lambda_v  		    = 1.0;  
+- lambda_thr      = 20.0; 
+- lambda_str      = 20.0; 
+- lambda_dif_thr  = 30.0;  
+- lambda_dif_str  = 1000.0;
 
 ## MPC With Latency
 
 The simulator artifically adds 100 ms of latency between command and actuator response in order to mimic real life actuator delay. To deal with the latency I used the suggestion in Lesson 19 to create a simple dynamic model of the system and propogated the state from the simulator for the duration of the latency. This new state could then be used by the MPC solver as its new initial state.
+
+![alt text][image4]
 
 ## Results
 Final results are shown in the video below.
