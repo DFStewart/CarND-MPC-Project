@@ -17,10 +17,10 @@ First we create a model of they system. This was provided in Lecture 18.
 There are 4 states as shown in Figure 1.The goal will be to model how these states evolve through time.
 ![alt text][image1]
 
-Next we identify 2 actuators, or inputs that change the states. These are the steering angle and throttle/brake. 
+Next we identify 2 actuators, or inputs that change the states, shown in Figure 2. These are the steering angle and throttle/brake. 
 ![alt text][image2]
 
-The update equations are shown below. These equations tell us how the state evolves with time given the value of other states, some geometry and the previous value of that particular state.
+The update equations are shown below in Figure 3. These equations tell us how the state evolves with time given the value of other states, some geometry and the previous value of that particular state.
 ![alt text][image3]
 
 ## Setting MPC Timestep Length (N) and Elapsed Duration (dt)
