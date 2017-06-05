@@ -3,6 +3,26 @@ Self-Driving Car Engineer Nanodegree Program
 
 ---
 
+[//]: # (Image References)
+
+[image1]: ./images/State.png "STATE"
+[image2]: ./images/Actuators.png "ACT"
+[image3]: ./images/UpdateEq.png "UPEQ"
+
+# Write Up
+
+## Kinematic Model
+
+![alt text][image1]
+![alt text][image2]
+![alt text][image3]
+
+## Setting MPC Timestep Length (N) and Elapsed Duration (dt)
+## Polynomial Fitting and MPC Preprocessing
+## MPC With Latency
+## Results
+## Further Work
+
 ## Dependencies
 
 * cmake >= 3.5
