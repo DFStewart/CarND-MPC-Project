@@ -15,19 +15,31 @@ Self-Driving Car Engineer Nanodegree Program
 First we create a model of they system. This was provided in Lecture 18. 
 
 There are 4 states as shown in Figure 1.The goal will be to model how these states evolve through time.
+
 ![alt text][image1]
 
 Next we identify 2 actuators, or inputs that change the states, shown in Figure 2. These are the steering angle and throttle/brake. 
+
 ![alt text][image2]
 
 The update equations are shown below in Figure 3. These equations tell us how the state evolves with time given the value of other states, some geometry and the previous value of that particular state.
+
 ![alt text][image3]
 
 ## Setting MPC Timestep Length (N) and Elapsed Duration (dt)
+
+
 ## Polynomial Fitting and MPC Preprocessing
+The simulator returns x and y global position coordinates of the car. We need to translate these into the vehicle body coordinate system first before sending to the MPC solver.
+
+Once the coordinates of the car are in the vehicle body frame we apply the polyfit function with 3rd order. The polyfit function will fit a polynomial of 3rd order. 3rd order was selected because of the suggestion in Lecture 18 that they work best at fitting most roads.
+
 ## MPC With Latency
+
 ## Results
+
 ## Further Work
+Further tuning could be done to improve performance. Only one speed was tested, other speeds should be tested to verify robustness of the controller. 
 
 ## Dependencies
 
