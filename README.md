@@ -5,9 +5,10 @@ Self-Driving Car Engineer Nanodegree Program
 
 [//]: # (Image References)
 
-[image1]: ./images/State.png "STATE"
+[image1]: ./images/State_Error.png "STATE"
 [image2]: ./images/Actuators.png "ACT"
-[image3]: ./images/UpdateEq.png "UPEQ"
+[image3]: ./images/UpdateEq_Error.png "UPEQ"
+[image4]: ./images/Latency.png "LATENCY"
 
 # Write Up
 
