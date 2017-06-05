@@ -9,6 +9,7 @@ Self-Driving Car Engineer Nanodegree Program
 [image2]: ./images/Actuators.png "ACT"
 [image3]: ./images/UpdateEq_Error.png "UPEQ"
 [image4]: ./images/Latency.png "LATENCY"
+[image5]: ./images/Transform.png "TRANSFORM"
 
 # Write Up
 
@@ -46,10 +47,12 @@ After some trial and error I settled on N = 17, dt=0.023s and T = 0.391s. This i
 ## Polynomial Fitting and MPC Preprocessing
 The simulator returns x and y global position coordinates of the car. We need to translate these into the vehicle body coordinate system first before sending to the MPC solver.
 
+![alt text][image5]
+
 Once the coordinates of the car are in the vehicle body frame we apply the polyfit function with 3rd order. The polyfit function will fit a polynomial of 3rd order. 3rd order was selected because of the suggestion in Lesson 18 that they work best at fitting most roads.
 
 ## MPC
-For the actual MPC itself, I started with the mpc_to_line example from Lesson 19. I started by adjusting N, dt and T. This did not seem to be enough to get the car driving smoothly. To improve this I used the suggestion in Lecture 19 to apply gains/cost modifiers for each variable we are attempting to minimize the cost. These "lambda" variables are hand tuned to the performance of the MPC. For example if I want the car to prioritize minimizing CTE, I increase the gain on CTE. These parameters were primarily hand tuned. The best gains I could find are shown below:
+For the actual MPC itself, I started with the mpc_to_line example from Lesson 19. I started by adjusting N, dt and T. This did not seem to be enough to get the car driving smoothly. To improve this I used the suggestion in Lecture 19 to apply gains/cost modifiers for each variable we are attempting to minimize the cost. These "lambda" variables are hand tuned to the performance of the MPC. For example if I want the car to prioritize minimizing CTE, I increase the gain on CTE which increases the overall cost. These parameters were primarily hand tuned. The best gains I used are shown below:
 
 - lambda_cte    	 = 10.0; 
 - lambda_epsi  	  = 50.0; 
