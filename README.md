@@ -54,13 +54,13 @@ Once the waypoints of the car are in the vehicle body frame we apply the polyfit
 ## MPC
 For the actual MPC itself, I started with the mpc_to_line example from Lesson 19. I started by adjusting N, dt and T. This did not seem to be enough to get the car driving smoothly. To improve this I used the suggestion in Lecture 19 to apply gains/cost modifiers for each variable we are attempting to minimize the cost. These "lambda" variables are hand tuned to the performance of the MPC. For example if I want the car to prioritize minimizing CTE, I increase the gain on CTE which increases the overall cost. These parameters were primarily hand tuned. The best gains I used are shown below:
 
-- lambda_cte    	 = 10.0; 
-- lambda_epsi  	  = 50.0; 
-- lambda_v  		    = 1.0;  
-- lambda_thr      = 20.0; 
-- lambda_str      = 20.0; 
-- lambda_dif_thr  = 30.0;  
-- lambda_dif_str  = 1000.0;
+- lambda_cte    	 = 10.0 
+- lambda_epsi  	  = 50.0 
+- lambda_v  		    = 1.0  
+- lambda_thr      = 20.0 
+- lambda_str      = 20.0 
+- lambda_dif_thr  = 30.0  
+- lambda_dif_str  = 1000.0
 
 ## MPC With Latency
 
