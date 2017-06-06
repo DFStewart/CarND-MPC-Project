@@ -16,15 +16,15 @@ Self-Driving Car Engineer Nanodegree Program
 ## Kinematic Model
 First we create a model of they system. This was provided in Lecture 18. 
 
-There are 4 states as shown in Figure 1.The goal will be to model how these states evolve through time.
+There are 4 states as shown in the equation below.The goal will be to model how these states evolve through time.
 
 ![alt text][image1]
 
-Next we identify 2 actuators, or inputs that change the states, shown in Figure 2. These are the steering angle and throttle/brake. 
+Next we identify 2 actuators, or inputs that change the states, shown in the equation below. These are the steering angle and throttle/brake. 
 
 ![alt text][image2]
 
-The update equations are shown below in Figure 3. These equations tell us how the state evolves with time given the value of other states, some geometry and the previous value of that particular state.
+The update equations are shown below in the equation below. These equations tell us how the state evolves with time given the value of other states, some geometry and the previous value of that particular state.
 
 ![alt text][image3]
 
@@ -64,7 +64,7 @@ For the actual MPC itself, I started with the mpc_to_line example from Lesson 19
 
 ## MPC With Latency
 
-The simulator artifically adds 100 ms of latency between command and actuator response in order to mimic real life actuator delay. To deal with the latency I used the suggestion in Lesson 19 to create a simple dynamic model of the system and propogated the state from the simulator for the duration of the latency. This new state could then be used by the MPC solver as its new initial state.
+The simulator artifically adds 100 ms of latency between command and actuator response in order to mimic real life actuator delay. To deal with the latency I used the suggestion in Lesson 19 to create a simple dynamic model of the system and propogated the state from the simulator for the duration of the latency. This model is shown in the equations below. This new state could then be used by the MPC solver as its new initial state.
 
 ![alt text][image4]
 
