@@ -42,7 +42,7 @@ Set N,dt and T to find a reasonable range for T and then tune dt and N. I observ
 * dt < 0.05 made the steering much smoother. 
 * Larger N > 20 seemed to be too large. The car seemed like it was trying to steer too slowly. It would often oscillate uncontrollably if N was too high.
 
-After some trial and error I settled on N = 17, dt=0.023s and T = 0.391s. This in concert with the gains applied to the costs seemed to work best.
+After some trial and error I settled on N = 17, dt=0.023s and T = 0.391s. This in concert with the gains applied to the costs seemed to work best. 
 
 ## Polynomial Fitting and MPC Preprocessing
 The simulator returns x and y global position coordinates of the car as well as the waypoints. We need to translate these into the vehicle body coordinate system first before sending to the MPC solver as the kinematic equations are mechanized in that frame of reference.
