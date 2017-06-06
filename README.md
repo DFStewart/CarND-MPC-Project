@@ -45,11 +45,11 @@ Set N,dt and T to find a reasonable range for T and then tune dt and N. I observ
 After some trial and error I settled on N = 17, dt=0.023s and T = 0.391s. This in concert with the gains applied to the costs seemed to work best.
 
 ## Polynomial Fitting and MPC Preprocessing
-The simulator returns x and y global position coordinates of the car. We need to translate these into the vehicle body coordinate system first before sending to the MPC solver.
+The simulator returns x and y global position coordinates of the car as well as the waypoints. We need to translate these into the vehicle body coordinate system first before sending to the MPC solver as the kinematic equations are mechanized in that frame of reference.
 
 ![alt text][image5]
 
-Once the coordinates of the car are in the vehicle body frame we apply the polyfit function with 3rd order. The polyfit function will fit a polynomial of 3rd order. 3rd order was selected because of the suggestion in Lesson 18 that they work best at fitting most roads.
+Once the waypoints of the car are in the vehicle body frame we apply the polyfit function with 3rd order. The polyfit function will fit a polynomial of 3rd order. 3rd order was selected because of the suggestion in Lesson 18 that they work best at fitting most roads.
 
 ## MPC
 For the actual MPC itself, I started with the mpc_to_line example from Lesson 19. I started by adjusting N, dt and T. This did not seem to be enough to get the car driving smoothly. To improve this I used the suggestion in Lecture 19 to apply gains/cost modifiers for each variable we are attempting to minimize the cost. These "lambda" variables are hand tuned to the performance of the MPC. For example if I want the car to prioritize minimizing CTE, I increase the gain on CTE which increases the overall cost. These parameters were primarily hand tuned. The best gains I used are shown below:
