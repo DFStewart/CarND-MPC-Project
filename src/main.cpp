@@ -80,53 +80,114 @@ int main() {
     cout << sdata << endl;
     if (sdata.size() > 2 && sdata[0] == '4' && sdata[1] == '2') {
       string s = hasData(sdata);
-      if (s != "") {
+	  /////////////////////////
+	  /// AUTOMATIC DRIVING ///
+	  /////////////////////////
+      if (s != "")
+	  {
         auto j = json::parse(s);
         string event = j[0].get<string>();
-        if (event == "telemetry") {
+        if (event == "telemetry")
+		{
           // j[1] is the data JSON object
+		  /////////////////////////
+		  /// TELEMETRY DATA    ///
+	      /////////////////////////
           vector<double> ptsx = j[1]["ptsx"];
           vector<double> ptsy = j[1]["ptsy"];
           double px = j[1]["x"];
           double py = j[1]["y"];
           double psi = j[1]["psi"];
           double v = j[1]["speed"];
+          double str_ang = j[1]["steering_angle"];
 
-          /*
-          * TODO: Calculate steeering angle and throttle using MPC.
-          *
-          * Both are in between [-1, 1].
-          *
-          */
+		  //////////////////////////////////////////////////////
+		  /// GLOBAL TO VEHICLE BODY COORDINATE TRANSFORM    ///
+	      //////////////////////////////////////////////////////
+		  Eigen::VectorXd ptsx_vb; //vb is vehicle body coordinates
+		  Eigen::VectorXd ptsy_vb;
+		  ptsx_vb = Eigen::VectorXd(ptsx.size());
+		  ptsy_vb = Eigen::VectorXd(ptsy.size());
+
+		  for (int i = 0; i < ptsx.size(); i++)
+          {
+            ptsx_vb[i] =  (ptsx[i] - px) * cos(psi) + (ptsy[i] - py) * sin(psi);
+            ptsy_vb[i] = -(ptsx[i] - px) * sin(psi) + (ptsy[i] - py) * cos(psi);
+          }
+
+          Eigen::VectorXd coeffs = polyfit(ptsx_vb, ptsy_vb, 3); //3rd order polynomial
+
+          /////////////////////////////
+          /// ADDRESS LATENCY       ///
+          /////////////////////////////
+          //Simple dynamic model to predict 100ms in the future what the state is
+          double dt_lat = 0.100; //assuming 100 ms latency
+          double Lf     = 2.67;  //from lectures
+          px  =  v*dt_lat;
+          psi = -v*str_ang/Lf*dt_lat;
+
+		  /////////////////////////////
+		  /// COMPUTE ERROR TERMS   ///
+	      /////////////////////////////
+
+          // The cross track error is calculated by evaluating at polynomial at x, f(x)
+          // and subtracting y. x and y are at 0 to represent the car.
+          double cte = polyeval(coeffs, px);
+
+          // Due to the sign starting at 0, the orientation error is -f'(x).
+          // derivative of coeffs[0] + coeffs[1] * x + coeffs[2] * x^2 + coeffs[3] * x^3 -> coeffs[1] when x = 0
+          double epsi = -atan(coeffs[1]);
+
+          // in the car centered coordinate, we have a new state:
+          Eigen::VectorXd new_state(6);
+          new_state << px, 0.0, psi, v, cte, epsi;
+
+          /////////////////////////////
+		  /// RUN MPC SOLVER        ///
+	      /////////////////////////////
           double steer_value;
           double throttle_value;
+		  // run solver to get the next state and the value of the actuators
+          vector<double> next_state_act = mpc.Solve(new_state, coeffs);
+		  steer_value    = next_state_act[6];
+          throttle_value = next_state_act[7];
 
+		  /////////////////////////////
+		  /// TELEMETRY OUTPUTS     ///
+	      /////////////////////////////
           json msgJson;
           // NOTE: Remember to divide by deg2rad(25) before you send the steering value back.
           // Otherwise the values will be in between [-deg2rad(25), deg2rad(25] instead of [-1, 1].
-          msgJson["steering_angle"] = steer_value;
-          msgJson["throttle"] = throttle_value;
+          msgJson["steering_angle"] =  -steer_value;
+          msgJson["throttle"]       =  throttle_value;
+          std::cout << "Steering Angle " << -steer_value   << std::endl;
+          std::cout << "Throttle "       << throttle_value << std::endl;
 
           //Display the MPC predicted trajectory 
           vector<double> mpc_x_vals;
           vector<double> mpc_y_vals;
 
+		  //Output from MPC solver
+		  mpc_x_vals  = mpc.mpc_x;
+		  mpc_y_vals =  mpc.mpc_y;
+
           //.. add (x,y) points to list here, points are in reference to the vehicle's coordinate system
           // the points in the simulator are connected by a Green line
-
           msgJson["mpc_x"] = mpc_x_vals;
           msgJson["mpc_y"] = mpc_y_vals;
 
           //Display the waypoints/reference line
           vector<double> next_x_vals;
           vector<double> next_y_vals;
-
           //.. add (x,y) points to list here, points are in reference to the vehicle's coordinate system
           // the points in the simulator are connected by a Yellow line
-
+          for (int i = 0;  i < ptsx_vb.size();  i++)
+		  {
+            next_x_vals.push_back(ptsx_vb[i] ) ;
+            next_y_vals.push_back(ptsy_vb[i] ) ;
+		  }
           msgJson["next_x"] = next_x_vals;
           msgJson["next_y"] = next_y_vals;
-
 
           auto msg = "42[\"steer\"," + msgJson.dump() + "]";
           std::cout << msg << std::endl;
@@ -142,7 +203,12 @@ int main() {
           this_thread::sleep_for(chrono::milliseconds(100));
           ws.send(msg.data(), msg.length(), uWS::OpCode::TEXT);
         }
-      } else {
+      }
+	  /////////////////////////
+	  /// MANUAL DRIVING    ///
+	  /////////////////////////
+	  else
+	  {
         // Manual driving
         std::string msg = "42[\"manual\",{}]";
         ws.send(msg.data(), msg.length(), uWS::OpCode::TEXT);
