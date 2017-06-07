@@ -70,6 +70,7 @@ The simulator artifically adds 100 ms of latency between command and actuator re
 
 ## Results
 Final results are shown in the video below.
+https://youtu.be/y_XDu3IsT2Q
 
 ## Further Work
 Further tuning could be done to improve performance. Only one speed was tested, other speeds should be tested to verify robustness of the controller. 
